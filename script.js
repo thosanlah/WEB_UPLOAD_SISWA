@@ -66,19 +66,22 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
 });
 
 function checkFolderImageCount(folderId, group) {
-  fetch(\`https://www.googleapis.com/drive/v3/files?q='\${folderId}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id)&pageSize=100\`, {
+  fetch(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id)&pageSize=100`, {
     headers: {
-      Authorization: \`Bearer \${accessToken}\`
+      Authorization: `Bearer ${accessToken}`
     }
   })
   .then(res => res.json())
   .then(data => {
     const count = data.files.length;
     if (count >= 6) {
-      document.getElementById('status').innerText += `\n✅ \${group} SELESAI (\${count} gambar).`;
+      document.getElementById('status').innerText += `\n✅ ${group} SELESAI (${count} gambar).`;
     } else {
-      document.getElementById('status').innerText += `\n📷 \${group} baru \${count} gambar.`;
+      document.getElementById('status').innerText += `\n📷 ${group} baru ${count} gambar.`;
     }
   })
   .catch(err => console.error('Gagal hitung file:', err));
 }
+
+// 👇 Pastikan callback dikenali oleh Google Login button
+window.handleCredentialResponse = handleCredentialResponse;
