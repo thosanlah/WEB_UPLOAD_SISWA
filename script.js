@@ -1,23 +1,27 @@
-const CLIENT_ID = '625422208305-pou6inp02kuo8pvl7766h861pql5uhg5.apps.googleusercontent.com'; /* MASUKKAN_CLIENT_ID_KAMU*/
-const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.metadata.readonly';
+const CLIENT_ID = '625422208305-pou6inp02kuo8pvl7766h861pql5uhg5.apps.googleusercontent.com';
 
 const folderMap = {
-  kelompok1: '1EP6Fm36k2h9L66tEEII20f1mGtuku05R', /*FOLDER_ID_KELOMPOK1*/
-  kelompok2: '1ERPVLQnLouhghFMtqKZvXaJOiywTRfK0', /*FOLDER_ID_KELOMPOK2*/
-  kelompok3: '1ETB2g-bdzdJZgmtlgnsFXW86DFWF-ZbQ', /*FOLDER_ID_KELOMPOK3*/
-  kelompok4: '1EYMxsvMECHEkI9ASrHw3K3H1MMNtpJeY'  /*FOLDER_ID_KELOMPOK4*/
+  kelompok1: '1EP6Fm36k2h9L66tEEII20f1mGtuku05R',
+  kelompok2: '1ERPVLQnLouhghFMtqKZvXaJOiywTRfK0',
+  kelompok3: '1ETB2g-bdzdJZgmtlgnsFXW86DFWF-ZbQ',
+  kelompok4: '1EYMxsvMECHEkI9ASrHw3K3H1MMNtpJeY'
 };
 
-function handleAuthClick() {
-  gapi.load('client:auth2', () => {
-    gapi.auth2.init({ client_id: CLIENT_ID }).then(() => {
-      gapi.auth2.getAuthInstance().signIn().then(() => {
-        gapi.client.load('drive', 'v3', () => {
-          document.getElementById('uploadForm').style.display = 'block';
-        });
-      });
-    });
+let accessToken = '';
+
+function handleCredentialResponse(response) {
+  console.log("Login berhasil. JWT Token:", response.credential);
+
+  google.accounts.oauth2.tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.metadata.readonly',
+    callback: (tokenResponse) => {
+      accessToken = tokenResponse.access_token;
+      document.getElementById('uploadForm').style.display = 'block';
+    }
   });
+
+  google.accounts.oauth2.tokenClient.requestAccessToken();
 }
 
 document.getElementById('uploadForm').addEventListener('submit', async (e) => {
@@ -36,7 +40,6 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     parents: [folderMap[group]]
   };
 
-  const accessToken = gapi.auth.getToken().access_token;
   const form = new FormData();
   form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
   form.append('file', file);
@@ -50,7 +53,6 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
 
     if (uploadRes.ok) {
       document.getElementById('status').innerText = `✅ Gambar berhasil diupload ke ${group}. Mengecek jumlah gambar...`;
-
       checkFolderImageCount(folderMap[group], group);
     } else {
       document.getElementById('status').innerText = '❌ Gagal upload.';
@@ -64,18 +66,19 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
 });
 
 function checkFolderImageCount(folderId, group) {
-  gapi.client.drive.files.list({
-    q: `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`,
-    fields: 'files(id)',
-    pageSize: 100
-  }).then(response => {
-    const count = response.result.files.length;
-    if (count >= 6) {
-      document.getElementById('status').innerText += `\n✅ ${group} SELESAI (${count} gambar).`;
-    } else {
-      document.getElementById('status').innerText += `\n📷 ${group} baru ${count} gambar.`;
+  fetch(\`https://www.googleapis.com/drive/v3/files?q='\${folderId}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id)&pageSize=100\`, {
+    headers: {
+      Authorization: \`Bearer \${accessToken}\`
     }
-  }).catch(error => {
-    console.error('Gagal mengecek jumlah file:', error);
-  });
+  })
+  .then(res => res.json())
+  .then(data => {
+    const count = data.files.length;
+    if (count >= 6) {
+      document.getElementById('status').innerText += `\n✅ \${group} SELESAI (\${count} gambar).`;
+    } else {
+      document.getElementById('status').innerText += `\n📷 \${group} baru \${count} gambar.`;
+    }
+  })
+  .catch(err => console.error('Gagal hitung file:', err));
 }

@@ -1,29 +1,45 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Upload Gambar ke Google Drive</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://apis.google.com/js/api.js"></script>
-  <script src="script.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <h2>Upload Gambar ke Google Drive per Kelompok</h2>
-  <button onclick="handleAuthClick()">Login dengan Google</button>
+  <h1>Upload Gambar ke Google Drive per Kelompok</h1>
 
+  <!-- Tombol Login Google -->
+  <div id="g_id_onload"
+       data-client_id="ISI_CLIENT_ID_KAMU"
+       data-callback="handleCredentialResponse"
+       data-auto_prompt="false">
+  </div>
+
+  <div class="g_id_signin"
+       data-type="standard"
+       data-size="large"
+       data-theme="outline"
+       data-text="sign_in_with"
+       data-shape="rectangular"
+       data-logo_alignment="left">
+  </div>
+
+  <!-- Form Upload -->
   <form id="uploadForm" style="display:none">
-    <select id="groupSelect" required>
-      <option value="">Pilih Kelompok</option>
+    <label for="groupSelect">Pilih Kelompok:</label>
+    <select id="groupSelect">
       <option value="kelompok1">Kelompok 1</option>
       <option value="kelompok2">Kelompok 2</option>
       <option value="kelompok3">Kelompok 3</option>
       <option value="kelompok4">Kelompok 4</option>
     </select>
-    <input type="file" id="fileInput" accept="image/*" required />
-    <button type="submit">Upload</button>
+    <input type="file" id="fileInput" accept="image/*" required>
+    <button type="submit">Upload Gambar</button>
   </form>
 
-  <div id="status"></div>
-
+  <p id="status"></p>
 </body>
 </html>
