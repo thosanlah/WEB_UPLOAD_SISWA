@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Upload Gambar ke Google Drive</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://apis.google.com/js/api.js"></script>
+</head>
+<body>
+  <h2>Upload Gambar ke Google Drive per Kelompok</h2>
+  <button onclick="handleAuthClick()">Login dengan Google</button>
+
+  <form id="uploadForm" style="display:none">
+    <select id="groupSelect" required>
+      <option value="">Pilih Kelompok</option>
+      <option value="kelompok1">Kelompok 1</option>
+      <option value="kelompok2">Kelompok 2</option>
+      <option value="kelompok3">Kelompok 3</option>
+      <option value="kelompok4">Kelompok 4</option>
+    </select>
+    <input type="file" id="fileInput" accept="image/*" required />
+    <button type="submit">Upload</button>
+  </form>
+
+  <div id="status"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
