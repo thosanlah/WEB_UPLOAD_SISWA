@@ -1,10 +1,10 @@
-const CLIENT_ID = '625422208305-pou6inp02kuo8pvl7766h861pql5uhg5.apps.googleusercontent.com';
+const CLIENT_ID = 'ISI_CLIENT_ID_KAMU';
 
 const folderMap = {
-  kelompok1: '1EP6Fm36k2h9L66tEEII20f1mGtuku05R',
-  kelompok2: '1ERPVLQnLouhghFMtqKZvXaJOiywTRfK0',
-  kelompok3: '1ETB2g-bdzdJZgmtlgnsFXW86DFWF-ZbQ',
-  kelompok4: '1EYMxsvMECHEkI9ASrHw3K3H1MMNtpJeY'
+  kelompok1: 'FOLDER_ID_KELOMPOK1',
+  kelompok2: 'FOLDER_ID_KELOMPOK2',
+  kelompok3: 'FOLDER_ID_KELOMPOK3',
+  kelompok4: 'FOLDER_ID_KELOMPOK4'
 };
 
 let accessToken = '';
@@ -75,13 +75,14 @@ function checkFolderImageCount(folderId, group) {
   .then(data => {
     const count = data.files.length;
     if (count >= 6) {
-      document.getElementById('status').innerText += `\n✅ ${group} SELESAI (${count} gambar).`;
+      document.getElementById('status').innerText += `
+✅ ${group} SELESAI (${count} gambar).`;
     } else {
-      document.getElementById('status').innerText += `\n📷 ${group} baru ${count} gambar.`;
+      document.getElementById('status').innerText += `
+📷 ${group} baru ${count} gambar.`;
     }
   })
   .catch(err => console.error('Gagal hitung file:', err));
 }
 
-// 👇 Pastikan callback dikenali oleh Google Login button
 window.handleCredentialResponse = handleCredentialResponse;
