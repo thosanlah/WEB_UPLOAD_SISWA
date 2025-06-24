@@ -1,16 +1,19 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: sans-serif;
   text-align: center;
-  padding: 20px;
+  padding: 40px;
+  background: linear-gradient(to bottom, #f7f7ff, #d0e2f2);
 }
-h1 {
-  margin-bottom: 30px;
-}
+
 form {
   margin-top: 20px;
 }
-#status {
+
+pre {
   margin-top: 20px;
-  white-space: pre-wrap;
-  color: green;
+  background: #fff;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: left;
 }
