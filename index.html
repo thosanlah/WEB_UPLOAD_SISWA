@@ -54,7 +54,7 @@
     let accessToken = '';
 
     function handleCredentialResponse(response) {
-      console.log("Login sukses");
+      console.log("Login berhasil");
 
       document.querySelector(".g_id_signin").style.display = "none";
       document.getElementById("uploadArea").style.display = "block";
@@ -66,23 +66,25 @@
             scope: 'https://www.googleapis.com/auth/drive.file',
             callback: (tokenResponse) => {
               if (tokenResponse.error) {
-                alert("Token gagal diminta.");
+                alert("Gagal mendapatkan token akses.");
                 return;
               }
               accessToken = tokenResponse.access_token;
               console.log("Access Token:", accessToken);
+              // Token didapatkan, tunggu user klik tombol upload
             }
           });
         });
       });
     }
 
+    // Saat tombol upload diklik
     document.getElementById("uploadBtn").addEventListener("click", () => {
-      if (!accessToken && tokenClient) {
+      if (!accessToken) {
         tokenClient.requestAccessToken({ prompt: '' });
-        return;
+      } else {
+        uploadToDrive();
       }
-      uploadToDrive();
     });
 
     function uploadToDrive() {
@@ -112,12 +114,17 @@
       })
       .then(res => res.json())
       .then(val => {
-        document.getElementById("status").textContent = "Upload berhasil!";
-        console.log("Uploaded:", val);
+        if (val.error) {
+          console.error("Upload error:", val.error);
+          document.getElementById("status").textContent = "Upload gagal!";
+        } else {
+          console.log("Uploaded:", val);
+          document.getElementById("status").textContent = "Upload berhasil!";
+        }
       })
       .catch(err => {
-        document.getElementById("status").textContent = "Upload gagal!";
-        console.error("Upload error:", err);
+        console.error("Fetch error:", err);
+        document.getElementById("status").textContent = "Upload gagal total!";
       });
     }
   </script>
