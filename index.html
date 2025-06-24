@@ -2,29 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Upload Gambar ke Google Drive per Kelompok</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Gambar ke Google Drive</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://apis.google.com/js/api.js"></script>
-  <script src="script.js" defer></script>
 </head>
 <body>
   <h2>Upload Gambar ke Google Drive per Kelompok</h2>
 
+  <!-- Login Google -->
   <div id="g_id_onload"
        data-client_id="625422208305-pou6inp02kuo8pvl7766h861pql5uhg5.apps.googleusercontent.com"
-       data-context="use"
+       data-scope="https://www.googleapis.com/auth/drive.file"
        data-ux_mode="popup"
-       data-callback="handleCredentialResponse"
-       data-auto_prompt="false"></div>
+       data-callback="handleCredentialResponse">
+  </div>
 
   <div class="g_id_signin"
        data-type="standard"
-       data-shape="rectangular"
        data-theme="outline"
-       data-text="signin_with"
-       data-size="large"
-       data-logo_alignment="left"></div>
+       data-size="large">
+  </div>
 
+  <!-- Upload Form -->
   <div id="uploadArea" style="display: none;">
     <select id="groupSelector">
       <option value="kelompok1">Kelompok 1</option>
@@ -34,9 +34,92 @@
     </select><br><br>
 
     <input type="file" id="fileInput" accept="image/*" />
-    <button onclick="uploadToDrive()">Upload</button>
+    <button id="uploadBtn">Upload</button>
 
     <p id="status"></p>
   </div>
+
+  <script>
+    const CLIENT_ID = '625422208305-pou6inp02kuo8pvl7766h861pql5uhg5.apps.googleusercontent.com';
+    const API_KEY = 'AIzaSyBB6LqekrczFQlYz86Q3omCQxjqwF4f13k';
+
+    const folderIds = {
+      kelompok1: '1EP6Fm36k2h9L66tEEII20f1mGtuku05R',
+      kelompok2: '1ERPVLQnLouhghFMtqKZvXaJOiywTRfK0',
+      kelompok3: '1ETB2g-bdzdJZgmtlgnsFXW86DFWF-ZbQ',
+      kelompok4: '1EYMxsvMECHEkI9ASrHw3K3H1MMNtpJeY'
+    };
+
+    let tokenClient;
+    let accessToken = '';
+
+    function handleCredentialResponse(response) {
+      console.log("Login sukses");
+
+      document.querySelector(".g_id_signin").style.display = "none";
+      document.getElementById("uploadArea").style.display = "block";
+
+      gapi.load('client', () => {
+        gapi.client.init({ apiKey: API_KEY }).then(() => {
+          tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: CLIENT_ID,
+            scope: 'https://www.googleapis.com/auth/drive.file',
+            callback: (tokenResponse) => {
+              if (tokenResponse.error) {
+                alert("Token gagal diminta.");
+                return;
+              }
+              accessToken = tokenResponse.access_token;
+              console.log("Access Token:", accessToken);
+            }
+          });
+        });
+      });
+    }
+
+    document.getElementById("uploadBtn").addEventListener("click", () => {
+      if (!accessToken && tokenClient) {
+        tokenClient.requestAccessToken({ prompt: '' });
+        return;
+      }
+      uploadToDrive();
+    });
+
+    function uploadToDrive() {
+      const file = document.getElementById("fileInput").files[0];
+      const group = document.getElementById("groupSelector").value;
+      const folderId = folderIds[group];
+
+      if (!file || !folderId) {
+        alert("Pilih kelompok dan file terlebih dahulu.");
+        return;
+      }
+
+      const metadata = {
+        name: file.name,
+        parents: [folderId]
+      };
+
+      const form = new FormData();
+      const blob = new Blob([JSON.stringify(metadata)], { type: 'application/json' });
+      form.append("metadata", blob);
+      form.append("file", file);
+
+      fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
+        method: "POST",
+        headers: new Headers({ "Authorization": "Bearer " + accessToken }),
+        body: form
+      })
+      .then(res => res.json())
+      .then(val => {
+        document.getElementById("status").textContent = "Upload berhasil!";
+        console.log("Uploaded:", val);
+      })
+      .catch(err => {
+        document.getElementById("status").textContent = "Upload gagal!";
+        console.error("Upload error:", err);
+      });
+    }
+  </script>
 </body>
 </html>
