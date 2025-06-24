@@ -1,47 +1,42 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload Gambar ke Google Drive</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Upload Gambar ke Google Drive per Kelompok</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <h1>Upload Gambar ke Google Drive per Kelompok</h1>
+  <h2>Upload Gambar ke Google Drive per Kelompok</h2>
 
   <div id="g_id_onload"
-     data-client_id="625422208305-pou6inp02kuo8pvl7766h861pql5uhg5.apps.googleusercontent.com"
-     data-context="use"
-     data-ux_mode="popup"
-     data-callback="handleCredentialResponse"
-     data-auto_prompt="false">
-</div>
+       data-client_id="625422208305-pou6inp02kuo8pvl7766h861pql5uhg5.apps.googleusercontent.com"
+       data-context="use"
+       data-ux_mode="popup"
+       data-callback="handleCredentialResponse"
+       data-auto_prompt="false"></div>
 
-<div class="g_id_signin"
-     data-type="standard"
-     data-shape="rectangular"
-     data-theme="outline"
-     data-text="signin_with"
-     data-size="large"
-     data-logo_alignment="left">
-</div>
+  <div class="g_id_signin"
+       data-type="standard"
+       data-shape="rectangular"
+       data-theme="outline"
+       data-text="signin_with"
+       data-size="large"
+       data-logo_alignment="left"></div>
 
-
-  <form id="uploadForm" style="display:none;">
-    <select id="groupSelect">
-      <option value="">Pilih Kelompok</option>
+  <div id="uploadArea" style="display: none;">
+    <select id="groupSelector">
       <option value="kelompok1">Kelompok 1</option>
       <option value="kelompok2">Kelompok 2</option>
       <option value="kelompok3">Kelompok 3</option>
       <option value="kelompok4">Kelompok 4</option>
-    </select>
-    <input type="file" id="fileInput" accept="image/*" required />
-    <button type="submit">Upload</button>
-  </form>
+    </select><br><br>
 
-  <pre id="status"></pre>
+    <input type="file" id="fileInput" accept="image/*" />
+    <button onclick="uploadToDrive()">Upload</button>
 
-  <script src="script.js"></script>
+    <p id="status"></p>
+  </div>
 </body>
 </html>
